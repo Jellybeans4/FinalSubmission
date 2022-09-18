@@ -9,7 +9,8 @@ void decode_BL(instr_t * const insn) {
     int32_t instr = insn->insnbits;
     uint32_t imm26 = GETBF(instr, 0, 26);
     int64_t offset= (int64_t) (imm26 << 2); 
-    insn->branch_PC = offset;
+    insn->dst = guest.proc->GPR.names64 + 30;
+    insn->branch_PC = guest.proc->PC.bits->xval+ offset;
     insn->next_PC =  guest.proc->PC.bits->xval +4; 
     return;
 }
