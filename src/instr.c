@@ -90,29 +90,31 @@ void decode_instr(instr_t *const insn) {
     switch(insn->op) {
         case OP_NONE: assert(false); break;
         case OP_LDURB: decode_LDURB(insn); break;
-        case OP_LDUR: break;
+        case OP_LDUR: decode_LDUR(insn); break;
         case OP_STURB: decode_STURB(insn); break;
-        case OP_STUR: break;
-        case OP_MOVK: break;
-        case OP_MOVZ: break;
+        case OP_STUR: decode_STUR(insn); break;
+        case OP_MOVK: decode_MOVK(insn); break;
+        case OP_MOVZ: decode_MOVZ(insn); break;
         case OP_ADD_RI: decode_ADD_RI(insn); break;
-        case OP_ADDS_RR: break;
-        case OP_SUBS_RR: break;
-        case OP_MVN: break;
-        case OP_ORR_RR: break;
-        case OP_EOR_RR: break;
-        case OP_ANDS_RR: break;
-        case OP_LSL: break;
-        case OP_LSR: break;
-        case OP_UBFM: break;
-        case OP_ASR: break;
-        case OP_B: break;
-        case OP_B_COND: break;
-        case OP_BL: break;
-        case OP_RET: break;
+        case OP_ADDS_RR: decode_ADDS_RR(insn); break;
+        case OP_SUBS_RR: decode_SUBS_RR(insn); break;
+        case OP_MVN: decode_MVN(insn); break;
+        case OP_ORR_RR: decode_ORR_RR(insn); break;
+        case OP_EOR_RR: decode_EOR_RR(insn); break;
+        case OP_ANDS_RR: decode_ANDS_RR(insn); break;
+        case OP_LSL: decode_LSL(insn); break;
+        case OP_LSR: decode_LSR(insn); break;
+        case OP_UBFM: decode_UBFM(insn); break;
+        case OP_ASR: decode_ASR(insn); break;
+
+        case OP_B:  decode_B(insn); break;
+        case OP_B_COND: decode_B_COND(insn); break;
+        case OP_BL:   decode_BL(insn); break;
+        case OP_RET:  decode_RET(insn);break;
+
         case OP_NOP: decode_NOP(insn); break;
         case OP_HLT: decode_HLT(insn); break;
-        case OP_ERROR: assert(false); break;
+        case OP_ERROR:  break;
     }
     return;
 }
@@ -129,26 +131,28 @@ void execute_instr(instr_t *const insn) {
     switch(insn->op) {
         case OP_NONE: assert(false); break;
         case OP_LDURB: execute_LDURB(insn); break;
-        case OP_LDUR: break;
+        case OP_LDUR: execute_LDUR(insn); break;
         case OP_STURB: execute_STURB(insn); break;
-        case OP_STUR: break;
-        case OP_MOVK: break;
-        case OP_MOVZ: break;
+        case OP_STUR: execute_STUR(insn); break;
+        case OP_MOVK: execute_MOVK(insn); break;
+        case OP_MOVZ: execute_MOVZ(insn); break;
         case OP_ADD_RI: execute_ADD_RI(insn); break;
-        case OP_ADDS_RR: break;
-        case OP_SUBS_RR: break;
-        case OP_MVN: break;
-        case OP_ORR_RR: break;
-        case OP_EOR_RR: break;
-        case OP_ANDS_RR: break;
-        case OP_LSL: break;
-        case OP_LSR: break;
-        case OP_UBFM: break;
-        case OP_ASR: break;
-        case OP_B: break;
-        case OP_B_COND: break;
-        case OP_BL: break;
-        case OP_RET: break;
+        case OP_ADDS_RR: execute_ADDS_RR(insn); break;
+        case OP_SUBS_RR: execute_SUBS_RR(insn); break;
+        case OP_MVN: execute_MVN(insn); break;
+        case OP_ORR_RR: execute_ORR_RR(insn); break;
+        case OP_EOR_RR: execute_EOR_RR(insn); break;
+        case OP_ANDS_RR: execute_ANDS_RR(insn); break;
+        case OP_LSL: execute_LSL(insn); break;
+        case OP_LSR: execute_LSR(insn); break;
+        case OP_UBFM: execute_UBFM(insn); break;
+        case OP_ASR: execute_ASR(insn); break;
+
+        case OP_B:execute_B(insn); break;
+        case OP_B_COND: execute_B_COND(insn); break;
+        case OP_BL: execute_BL(insn); break;
+        case OP_RET: execute_RET(insn); break; // fine for now ????/s
+
         case OP_NOP: execute_NOP(insn); break;
         case OP_HLT: execute_HLT(insn); break;
         case OP_ERROR: assert(false); break;
@@ -166,27 +170,30 @@ void execute_instr(instr_t *const insn) {
 void memory_instr(instr_t *const insn) {
     switch(insn->op) {
         case OP_NONE: assert(false); break;
-        case OP_LDURB: common_memory_load_BW(insn); break;
-        case OP_LDUR: break;
-        case OP_STURB: common_memory_store_WB(insn); break;
-        case OP_STUR: break;
-        case OP_MOVK: break;
-        case OP_MOVZ: break;
+        case OP_LDURB: common_memory_load_LX(insn); break; //bw
+        case OP_LDUR: common_memory_load_LX(insn); break;
+        case OP_STURB: common_memory_store_XL(insn); break; // wx
+        case OP_STUR: common_memory_store_XL(insn); break;
+        
+        case OP_MOVK: common_memory_none(insn); break;
+        case OP_MOVZ: common_memory_none(insn); break;
         case OP_ADD_RI: common_memory_none(insn); break;
-        case OP_ADDS_RR: break;
-        case OP_SUBS_RR: break;
-        case OP_MVN: break;
-        case OP_ORR_RR: break;
-        case OP_EOR_RR: break;
-        case OP_ANDS_RR: break;
-        case OP_LSL: break;
-        case OP_LSR: break;
-        case OP_UBFM: break;
-        case OP_ASR: break;
-        case OP_B: break;
-        case OP_B_COND: break;
-        case OP_BL: break;
-        case OP_RET: break;
+        case OP_ADDS_RR: common_memory_none(insn); break;
+        case OP_SUBS_RR: common_memory_none(insn); break;
+        case OP_MVN: common_memory_none(insn); break;
+        case OP_ORR_RR: common_memory_none(insn); break;
+        case OP_EOR_RR: common_memory_none(insn); break;
+        case OP_ANDS_RR: common_memory_none(insn); break;
+        case OP_LSL: common_memory_none(insn); break;
+        case OP_LSR: common_memory_none(insn); break;
+        case OP_UBFM: common_memory_none(insn); break;
+        case OP_ASR: common_memory_none(insn); break;
+
+        case OP_B: common_memory_none(insn); break;
+        case OP_B_COND: common_memory_none(insn); break;
+        case OP_BL: common_memory_none(insn); break;
+        case OP_RET: common_memory_none(insn); break; // OKOKOKOKOK
+
         case OP_NOP: common_memory_none(insn); break;
         case OP_HLT: common_memory_none(insn); break;
         case OP_ERROR: assert(false); break;
@@ -204,25 +211,29 @@ void memory_instr(instr_t *const insn) {
 void wback_instr(instr_t *const insn) {
     switch(insn->op) {
         case OP_NONE: assert(false); break;
-        case OP_LDURB: common_writeback_mem_W(insn); break;
-        case OP_LDUR: 
-            break;
-        case OP_STURB: case OP_STUR: common_writeback_none(insn); break;
-        case OP_MOVK: case OP_MOVZ: 
-            break;
-        case OP_ADD_RI:
-        case OP_ADDS_RR: 
-        case OP_SUBS_RR: 
-        case OP_MVN: 
-        case OP_ORR_RR: 
-        case OP_EOR_RR: 
-        case OP_ANDS_RR: 
-        case OP_LSL: case OP_LSR: case OP_UBFM: case OP_ASR: 
-            common_writeback_alu_X(insn); break;
-        case OP_B: break;
-        case OP_B_COND: break;
-        case OP_BL: break;
-        case OP_RET: break;
+        case OP_LDURB: common_writeback_mem_X(insn); break;
+        case OP_LDUR:  common_writeback_mem_X(insn); break;
+        case OP_STURB: common_writeback_none(insn); break;
+        case OP_STUR: common_writeback_none(insn); break;
+        case OP_MOVK: common_writeback_alu_X(insn); break;
+        case OP_MOVZ: common_writeback_alu_X(insn); break;
+        case OP_ADD_RI:common_writeback_alu_X(insn); break;
+        case OP_ADDS_RR: common_writeback_alu_X(insn); break;
+        case OP_SUBS_RR: common_writeback_alu_X(insn); break;
+        case OP_MVN: common_writeback_alu_X(insn); break;
+        case OP_ORR_RR: common_writeback_alu_X(insn); break;
+        case OP_EOR_RR: common_writeback_alu_X(insn); break;
+        case OP_ANDS_RR: common_writeback_alu_X(insn); break;
+        case OP_LSL: common_writeback_alu_X(insn); break;
+        case OP_LSR: common_writeback_alu_X(insn); break;
+        case OP_UBFM: common_writeback_alu_X(insn); break;
+        case OP_ASR: common_writeback_alu_X(insn); break;
+
+        case OP_B: common_writeback_none(insn); break;
+        case OP_B_COND: common_writeback_none(insn); break;
+        case OP_BL: common_writeback_special(insn); break;
+        case OP_RET: common_writeback_none(insn); break; 
+
         case OP_NOP: common_writeback_none(insn); break;
         case OP_HLT: common_writeback_none(insn); break;
         case OP_ERROR: assert(false); break;
@@ -239,23 +250,31 @@ void wback_instr(instr_t *const insn) {
 
 void update_pc_instr(instr_t *const insn) {
     switch(insn->op) {
-        case OP_NONE: 
-            assert(false); break;
-        case OP_LDURB: case OP_LDUR: 
-        case OP_STURB: case OP_STUR: 
-        case OP_MOVK: case OP_MOVZ: 
-        case OP_ADD_RI: case OP_ADDS_RR: case OP_SUBS_RR: 
-        case OP_MVN: 
-        case OP_ORR_RR: case OP_EOR_RR: case OP_ANDS_RR: 
-        case OP_LSL: case OP_LSR: case OP_UBFM: case OP_ASR: 
-            update_pc_next(insn); break;
-        case OP_B: 
+        case OP_NONE: assert(false); break;
+        case OP_LDURB: update_pc_next(insn); break;
+        case OP_LDUR: update_pc_next(insn); break;
+        case OP_STURB: update_pc_next(insn); break;
+        case OP_STUR: update_pc_next(insn); break;
+        case OP_MOVK: update_pc_next(insn); break;
+        case OP_MOVZ: update_pc_next(insn); break;
+        case OP_ADD_RI: update_pc_next(insn); break;
+        case OP_ADDS_RR: update_pc_next(insn); break;
+        case OP_SUBS_RR: update_pc_next(insn); break;
+        case OP_MVN: update_pc_next(insn); break;
+        case OP_ORR_RR: update_pc_next(insn); break;
+        case OP_EOR_RR: update_pc_next(insn); break;
+        case OP_ANDS_RR: update_pc_next(insn); break;
+        case OP_LSL: update_pc_next(insn); break;
+        case OP_LSR: update_pc_next(insn); break;
+        case OP_UBFM: update_pc_next(insn); break;
+        case OP_ASR: update_pc_next(insn); break;
+        case OP_B: update_pc_branch(insn);
             break;
-        case OP_B_COND: 
+        case OP_B_COND: update_pc_branch(insn);
             break;
-        case OP_BL: 
+        case OP_BL:  update_pc_branch(insn);
             break;
-        case OP_RET: 
+        case OP_RET: update_pc_branch(insn); 
             break;
         case OP_NOP: update_pc_next(insn); break;
         case OP_HLT: update_pc_halt(insn); break;
